@@ -6,6 +6,7 @@ const {
   postDataSearch,
   retouchPost,
   deletePost,
+  userPostSearch,
 } = require("./user");
 
 const app = express();
@@ -15,7 +16,8 @@ app.post("/signup", createUser);
 app.post("/addpost", createPost);
 app.get("/postsearch", postDataSearch);
 app.patch("/retouchPost", retouchPost);
-app.delete("/deletepost", deletePost);
+app.delete("/:id/deletepost", deletePost);
+app.get("/userPostSearch", userPostSearch);
 
 const server = http.createServer(app);
 
