@@ -16,7 +16,7 @@ const users = [
   },
 ];
 
-const posts = [
+let posts = [
   {
     id: 1,
     title: "간단한 HTTP API 개발 시작!",
@@ -109,10 +109,48 @@ const retouchPost = (req, res) => {
 };
 
 //게시글 삭제
+/* const deletePost = async (req, res, next) => {
+  try {
+    await posts.destroy({
+      where: { id: req.params.id, userId: req.params.userId },
+    });
+    res.json({ message: "postingDeleted" });
+  } catch (error) {
+    res.send("실패");
+    console.error(error);
+    next(error);
+  }
+}; */
 const deletePost = (req, res) => {
-  const { id, title, content, userId } = req.body.data;
-  posts.delete({ id, title, content, userId });
-  res.json({ message: "postingDeleted" });
+  let { id } = req.query;
+  const newId = Number(id);
+  const result = posts.filter((post) => post.id !== newId);
+  posts = result;
+  res.json({ data: posts });
+};
+
+//유저와 게시글 조회
+const userPostSearch = (req, res) => {
+  const userId = Number(req.query.userId);
+  const userInfo = users.find((user) => user.id === userId);
+  const postings = posts.filter((post) => post.userId === userId);
+
+  let newPostings = [];
+
+  postings.forEach((post) => {
+    let tmp = {
+      postingId: post.id,
+      postingName: post.title,
+      postingContent: post.content,
+    };
+    newPostings.push(tmp);
+  });
+  const newPost = {
+    userId,
+    userName: userInfo.name,
+    postings: newPostings,
+  };
+  res.json({ data: newPost });
 };
 
 module.exports = {
@@ -121,4 +159,5 @@ module.exports = {
   postDataSearch,
   retouchPost,
   deletePost,
+  userPostSearch,
 };
